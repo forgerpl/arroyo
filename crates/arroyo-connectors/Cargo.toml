@@ -52,7 +52,7 @@ rdkafka-sys = "4.5.0"
 sasl2-sys = { version = "0.1.6", features = ["vendored"] }
 
 # SSE
-eventsource-client = "0.12.0"
+eventsource-client = { git = "https://github.com/forgerpl/rust-eventsource-client.git", version = "0.12.2" }
 
 # Websocket
 tokio-tungstenite = { version = "0.20.1", features = ["native-tls"] }

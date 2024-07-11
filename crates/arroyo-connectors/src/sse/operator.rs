@@ -6,7 +6,7 @@ use arroyo_rpc::formats::{BadData, Format, Framing};
 use arroyo_rpc::grpc::rpc::{StopMode, TableConfig};
 use arroyo_rpc::{ControlMessage, ControlResp, OperatorConfig};
 use arroyo_state::tables::global_keyed_map::GlobalKeyedView;
-use arroyo_types::{string_to_map, ArrowMessage, SignalMessage, UserError, Watermark};
+use arroyo_types::{from_millis, string_to_map, ArrowMessage, SignalMessage, UserError, Watermark};
 use async_trait::async_trait;
 use bincode::{Decode, Encode};
 use eventsource_client::{Client, SSE};
@@ -169,8 +169,10 @@ impl SSESourceFunc {
                                         }
 
                                         if events.is_empty() || events.contains(&event.event_type) {
+                                            let ts = event.ts.map(from_millis).unwrap_or_else(SystemTime::now);
+
                                             ctx.deserialize_slice(
-                                                event.data.as_bytes(), SystemTime::now()).await?;
+                                                event.data.as_bytes(), ts).await?;
 
                                             if ctx.should_flush() {
                                                 ctx.flush_buffer().await?;
